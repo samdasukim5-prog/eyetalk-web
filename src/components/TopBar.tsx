@@ -36,7 +36,7 @@ export function TopBar({ showBrand, title, onBack, onSettings, onSpeak }: TopBar
           </div>
         ) : (
           <button className="topbar-back" onClick={onBack}>
-            <IconBack size={20} />
+            <IconBack size={26} />
             <span>뒤로</span>
           </button>
         )}

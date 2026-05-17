@@ -55,6 +55,8 @@ export default function App() {
   const pop = () =>
     setStack(s => (s.length > 1 ? s.slice(0, -1) : s));
 
+  const goHome = () => setStack([{ id: 'main' }]);
+
   const current = stack[stack.length - 1];
 
   const shellStyle = {
@@ -72,6 +74,7 @@ export default function App() {
           onSpeak={handleSpeak}
           onPush={push}
           onSettings={() => push({ id: 'settings' })}
+          onHome={goHome}
         />
       )}
 
@@ -83,6 +86,8 @@ export default function App() {
           onSpeak={handleSpeak}
           onBack={pop}
           onPush={push}
+          onHome={goHome}
+          onSettings={() => push({ id: 'settings' })}
         />
       )}
 
@@ -92,6 +97,7 @@ export default function App() {
           onUpdate={update}
           onBack={pop}
           onSpeak={handleSpeak}
+          onHome={goHome}
         />
       )}
 

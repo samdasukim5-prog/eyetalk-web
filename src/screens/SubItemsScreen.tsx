@@ -12,9 +12,11 @@ interface SubItemsScreenProps {
   onSpeak: (text: string) => void;
   onBack: () => void;
   onPush: (screen: SubScreen) => void;
+  onHome: () => void;
+  onSettings: () => void;
 }
 
-export function SubItemsScreen({ title, items, banner, onSpeak, onBack, onPush }: SubItemsScreenProps) {
+export function SubItemsScreen({ title, items, banner, onSpeak, onBack, onPush, onHome, onSettings }: SubItemsScreenProps) {
   const handleCard = (item: MessageItem) => {
     if (item.sub) {
       const nextBanner = item.tone === 'pain' ? `통증이 있는 부위: ${item.label}` : undefined;
@@ -26,7 +28,7 @@ export function SubItemsScreen({ title, items, banner, onSpeak, onBack, onPush }
 
   return (
     <>
-      <TopBar title={title} onBack={onBack} onSpeak={onSpeak} />
+      <TopBar title={title} onBack={onBack} onSpeak={onSpeak} onHome={onHome} onSettings={onSettings} />
       {banner && (
         <div className="banner">
           <div className="banner-dot" />

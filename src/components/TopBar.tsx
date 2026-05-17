@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { IconEye, IconBack, IconKeyboard, IconSettings } from './Icons';
+import { House } from 'lucide-react';
 
 interface TopBarProps {
   showBrand?: boolean;
@@ -7,9 +8,10 @@ interface TopBarProps {
   onBack?: () => void;
   onSettings?: () => void;
   onSpeak: (text: string) => void;
+  onHome?: () => void;
 }
 
-export function TopBar({ showBrand, title, onBack, onSettings, onSpeak }: TopBarProps) {
+export function TopBar({ showBrand, title, onBack, onSettings, onSpeak, onHome }: TopBarProps) {
   const [showModal, setShowModal] = useState(false);
   const [text, setText] = useState('');
 
@@ -45,9 +47,14 @@ export function TopBar({ showBrand, title, onBack, onSettings, onSpeak }: TopBar
         {!title && !showBrand && <div className="topbar-spacer" />}
 
         <div style={{ display: 'flex', gap: 4, flex: 1, justifyContent: 'flex-end' }}>
-          {showBrand && onSettings && (
+          {onSettings && (
             <button className="topbar-kbd" onClick={onSettings} aria-label="설정">
               <IconSettings size={22} />
+            </button>
+          )}
+          {onHome && (
+            <button className="topbar-kbd" onClick={onHome} aria-label="홈">
+              <House size={22} />
             </button>
           )}
           <button className="topbar-kbd" onClick={() => setShowModal(true)} aria-label="직접 입력">

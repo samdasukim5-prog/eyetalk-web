@@ -19,12 +19,14 @@ interface SettingsScreenProps {
   onUpdate: (patch: Partial<Settings>) => void;
   onBack: () => void;
   onSpeak: (text: string) => void;
+  onHome: () => void;
+  onSettings?: () => void;
 }
 
-export function SettingsScreen({ settings, onUpdate, onBack, onSpeak }: SettingsScreenProps) {
+export function SettingsScreen({ settings, onUpdate, onBack, onSpeak, onHome, onSettings }: SettingsScreenProps) {
   return (
     <>
-      <TopBar title="설정" onBack={onBack} onSpeak={onSpeak} />
+      <TopBar title="설정" onBack={onBack} onSpeak={onSpeak} onHome={onHome} onSettings={onSettings} />
       <div className="screen-body" style={{ overflowY: 'auto' }}>
         <div className="settings-list">
           <div className="settings-row">

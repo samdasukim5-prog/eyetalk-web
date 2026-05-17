@@ -9,9 +9,10 @@ interface MainScreenProps {
   onSpeak: (text: string) => void;
   onPush: (screen: SubScreen) => void;
   onSettings: () => void;
+  onHome: () => void;
 }
 
-export function MainScreen({ onSpeak, onPush, onSettings }: MainScreenProps) {
+export function MainScreen({ onSpeak, onPush, onSettings, onHome }: MainScreenProps) {
   const handleCard = (item: MessageItem) => {
     if (item.sub) {
       onPush({ id: 'subitems', title: item.label, items: item.sub });
@@ -22,7 +23,7 @@ export function MainScreen({ onSpeak, onPush, onSettings }: MainScreenProps) {
 
   return (
     <>
-      <TopBar showBrand onSpeak={onSpeak} onSettings={onSettings} />
+      <TopBar showBrand onSpeak={onSpeak} onSettings={onSettings} onHome={onHome} />
       <div className="screen-body">
         <div className="grid-2x3">
           {talkCategories.map(item => (

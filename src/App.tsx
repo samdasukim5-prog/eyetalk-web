@@ -29,8 +29,7 @@ export default function App() {
   const { settings, update } = useSettings();
 
   const [stack, setStack] = useState<Screen[]>(() => {
-    const onboarded = localStorage.getItem('@italk_onboarded') === 'true';
-    return [{ id: onboarded ? 'main' : 'onboarding' }];
+    return [{ id: 'onboarding' }];
   });
 
   const [toast, setToast] = useState<string | null>(null);

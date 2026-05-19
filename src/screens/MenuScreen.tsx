@@ -18,18 +18,18 @@ export function MenuScreen({ onNavigate, onSettings, onSpeak, onHome }: MenuScre
           <p style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>시선 또는 터치로 메뉴를 선택해 주세요.</p>
         </div>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', flex: 1, justifyContent: 'center' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', flex: 1, justifyContent: 'stretch' }}>
           {/* 자유롭게 말하기 */}
           <button
             onClick={() => onNavigate('keyboard_speak')}
             className="menu-hub-card"
           >
             <div className="icon-wrapper" style={{ background: 'var(--primary-light)', color: 'var(--primary)' }}>
-              <IconKeyboard size={28} />
+              <IconKeyboard size={32} />
             </div>
             <div style={{ flex: 1 }}>
-              <div style={{ fontSize: '18px', fontWeight: 800, color: 'var(--text)' }}>자유롭게 말하기</div>
-              <div style={{ fontSize: '13px', color: 'var(--text-secondary)', marginTop: '4px' }}>키보드로 직접 입력해서 말하기</div>
+              <div style={{ fontSize: '20px', fontWeight: 800, color: 'var(--text)' }}>자유롭게 말하기</div>
+              <div style={{ fontSize: '14px', color: 'var(--text-secondary)', marginTop: '6px' }}>키보드로 직접 입력해서 말하기</div>
             </div>
           </button>
 
@@ -39,11 +39,11 @@ export function MenuScreen({ onNavigate, onSettings, onSpeak, onHome }: MenuScre
             className="menu-hub-card"
           >
             <div className="icon-wrapper" style={{ background: 'var(--thanks-bg)', color: 'var(--thanks-fg)' }}>
-              <IconVoice size={28} />
+              <IconVoice size={32} />
             </div>
             <div style={{ flex: 1 }}>
-              <div style={{ fontSize: '18px', fontWeight: 800, color: 'var(--text)' }}>자주쓰는 표현</div>
-              <div style={{ fontSize: '13px', color: 'var(--text-secondary)', marginTop: '4px' }}>상황별 자주 사용하는 단어 및 카드</div>
+              <div style={{ fontSize: '20px', fontWeight: 800, color: 'var(--text)' }}>자주쓰는 표현</div>
+              <div style={{ fontSize: '14px', color: 'var(--text-secondary)', marginTop: '6px' }}>상황별 자주 사용하는 단어 및 카드</div>
             </div>
           </button>
 
@@ -53,11 +53,11 @@ export function MenuScreen({ onNavigate, onSettings, onSpeak, onHome }: MenuScre
             className="menu-hub-card"
           >
             <div className="icon-wrapper" style={{ background: 'var(--warm-bg)', color: 'var(--warm-fg)' }}>
-              <IconLink size={28} />
+              <IconLink size={32} />
             </div>
             <div style={{ flex: 1 }}>
-              <div style={{ fontSize: '18px', fontWeight: 800, color: 'var(--text)' }}>유용한 사이트</div>
-              <div style={{ fontSize: '13px', color: 'var(--text-secondary)', marginTop: '4px' }}>인터넷 포털 및 동영상 사이트 바로가기</div>
+              <div style={{ fontSize: '20px', fontWeight: 800, color: 'var(--text)' }}>유용한 사이트</div>
+              <div style={{ fontSize: '14px', color: 'var(--text-secondary)', marginTop: '6px' }}>인터넷 포털 및 동영상 사이트 바로가기</div>
             </div>
           </button>
         </div>

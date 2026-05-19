@@ -293,3 +293,85 @@ html, body { height: 100%; font-family: -apple-system, BlinkMacSystemFont, 'Sego
   transform: scale(1.08);
 }
 
+/* ── 가상 키보드 ── */
+.virtual-keyboard {
+  background: #E8EEF4;
+  border-top: 2px solid var(--border);
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.05);
+}
+.keyboard-tabs {
+  display: flex;
+  gap: 6px;
+  padding: 0 4px;
+  margin-bottom: 4px;
+}
+.kbd-tab-btn {
+  flex: 1;
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-align: center;
+}
+.kbd-tab-btn.active {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #fff;
+}
+.keyboard-row {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+}
+.key-btn {
+  flex: 1;
+  height: 48px;
+  border-radius: 10px;
+  background: var(--surface);
+  border: 1px solid rgba(0,0,0,0.06);
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  transition: all 0.1s ease;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.key-btn:active {
+  background: #D5DFE8;
+  transform: scale(0.94);
+}
+.key-btn.special-key {
+  background: #D2DCE6;
+  color: var(--text-secondary);
+  font-size: 14px;
+  font-weight: 800;
+}
+.key-btn.special-key:active {
+  background: #BCC8D4;
+}
+.key-btn.space-key {
+  flex: 5.5;
+}
+.key-btn.active-shift {
+  background: var(--primary);
+  color: #fff;
+  border-color: var(--primary);
+}
+
+

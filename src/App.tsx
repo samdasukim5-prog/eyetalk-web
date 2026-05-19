@@ -1,7 +1,10 @@
 import { useState, useRef, useCallback, type CSSProperties } from 'react';
 import { useSettings } from './hooks/useSettings';
 import { OnboardingScreen } from './screens/OnboardingScreen';
+import { MenuScreen } from './screens/MenuScreen';
 import { MainScreen } from './screens/MainScreen';
+import { KeyboardSpeakScreen } from './screens/KeyboardSpeakScreen';
+import { LinksScreen } from './screens/LinksScreen';
 import { SubItemsScreen } from './screens/SubItemsScreen';
 import { SettingsScreen } from './screens/SettingsScreen';
 import type { MessageItem } from './content/messages';
@@ -15,7 +18,10 @@ export interface SubScreen {
 
 type Screen =
   | { id: 'onboarding' }
+  | { id: 'menu' }
   | { id: 'main' }
+  | { id: 'keyboard_speak' }
+  | { id: 'links' }
   | SubScreen
   | { id: 'settings' };
 
@@ -48,13 +54,13 @@ export default function App() {
     toastTimer.current = setTimeout(() => setToast(null), 2500);
   }, [settings.rate]);
 
-  const push = (screen: SubScreen | { id: 'settings' }) =>
+  const push = (screen: SubScreen | { id: 'settings' } | { id: 'main' } | { id: 'keyboard_speak' } | { id: 'links' }) =>
     setStack(s => [...s, screen]);
 
   const pop = () =>
     setStack(s => (s.length > 1 ? s.slice(0, -1) : s));
 
-  const goHome = () => setStack([{ id: 'main' }]);
+  const goHome = () => setStack([{ id: 'menu' }]);
 
   const current = stack[stack.length - 1];
 
@@ -65,7 +71,16 @@ export default function App() {
   return (
     <div className="app-shell" style={shellStyle}>
       {current.id === 'onboarding' && (
-        <OnboardingScreen onStart={() => setStack([{ id: 'main' }])} />
+        <OnboardingScreen onStart={() => setStack([{ id: 'menu' }])} />
+      )}
+
+      {current.id === 'menu' && (
+        <MenuScreen
+          onNavigate={id => push({ id })}
+          onSettings={() => push({ id: 'settings' })}
+          onSpeak={handleSpeak}
+          onHome={goHome}
+        />
       )}
 
       {current.id === 'main' && (
@@ -74,6 +89,25 @@ export default function App() {
           onPush={push}
           onSettings={() => push({ id: 'settings' })}
           onHome={goHome}
+          onBack={pop}
+        />
+      )}
+
+      {current.id === 'keyboard_speak' && (
+        <KeyboardSpeakScreen
+          onSpeak={handleSpeak}
+          onBack={pop}
+          onHome={goHome}
+          onSettings={() => push({ id: 'settings' })}
+        />
+      )}
+
+      {current.id === 'links' && (
+        <LinksScreen
+          onBack={pop}
+          onHome={goHome}
+          onSettings={() => push({ id: 'settings' })}
+          onSpeak={handleSpeak}
         />
       )}
 

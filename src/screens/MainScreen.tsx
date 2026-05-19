@@ -10,9 +10,10 @@ interface MainScreenProps {
   onPush: (screen: SubScreen) => void;
   onSettings: () => void;
   onHome: () => void;
+  onBack: () => void;
 }
 
-export function MainScreen({ onSpeak, onPush, onSettings, onHome }: MainScreenProps) {
+export function MainScreen({ onSpeak, onPush, onSettings, onHome, onBack }: MainScreenProps) {
   const handleCard = (item: MessageItem) => {
     if (item.sub) {
       onPush({ id: 'subitems', title: item.label, items: item.sub });
@@ -23,7 +24,7 @@ export function MainScreen({ onSpeak, onPush, onSettings, onHome }: MainScreenPr
 
   return (
     <>
-      <TopBar showBrand onSpeak={onSpeak} onSettings={onSettings} onHome={onHome} />
+      <TopBar title="자주쓰는 표현" onBack={onBack} onSpeak={onSpeak} onSettings={onSettings} onHome={onHome} />
       <div className="screen-body">
         <div className="grid-2x3">
           {talkCategories.map(item => (

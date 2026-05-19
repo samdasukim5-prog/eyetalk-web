@@ -252,3 +252,42 @@ html, body { height: 100%; font-family: -apple-system, BlinkMacSystemFont, 'Sego
   white-space: nowrap;
 }
 @keyframes toast-in { from { opacity: 0; transform: translateX(-50%) translateY(8px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
+
+/* ── 메뉴 허브 카드 ── */
+.menu-hub-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 24px 20px;
+  border-radius: 20px;
+  border: 2px solid var(--border);
+  background: var(--surface);
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+  transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.02);
+}
+.menu-hub-card:hover {
+  border-color: var(--primary);
+  box-shadow: 0 6px 16px rgba(31, 111, 178, 0.08);
+}
+.menu-hub-card:active {
+  transform: scale(0.97);
+  opacity: 0.85;
+}
+.menu-hub-card .icon-wrapper {
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+.menu-hub-card:hover .icon-wrapper {
+  transform: scale(1.08);
+}
+

@@ -36,6 +36,20 @@ const NUM_ROWS = [
   ['~', '-', '+', '=', '?', '/', ',', '.', ':', ';']
 ];
 
+const AUTOCOMPLETE_WORDS = [
+  "안녕하세요", "감사합니다", "죄송합니다", "네", "아니요", 
+  "아파요", "머리가 아파요", "목이 아파요", "어깨가 아파요", "배가 아파요", "팔이 아파요", "다리가 아파요",
+  "전혀 안 아파요", "조금 아파요", "많이 아파요", "매우 심해요",
+  "가래 빼주세요", "물 주세요", "담요 주세요", "화장실 가고 싶어요", "전화 해주세요", "가족 불러주세요", "약 주세요",
+  "TV 켜주세요", "TV 꺼주세요", "커튼 쳐주세요", "커튼 걷어주세요", "추워요", "더워요", "불편해요", "피곤해요",
+  "머리를 올려주세요", "머리를 내려주세요", "다리를 올려주세요", "다리를 내려주세요", "자세가 불편해요",
+  "좋아요", "힘들어요", "무서워요", "외로워요", "지루해요",
+  "배고파요", "목말라요", "도와주세요", "고마워요", "사랑해요", "자고 싶어요",
+  "불 꺼주세요", "불 켜주세요", "창문 열어주세요", "창문 닫아주세요"
+];
+
+const DEFAULT_SUGGESTIONS = ["안녕하세요", "감사합니다", "도와주세요", "물 주세요", "불편해요"];
+
 export function KeyboardSpeakScreen({ onSpeak, onBack, onHome, onSettings }: KeyboardSpeakScreenProps) {
   const [jasos, setJasos] = useState<string[]>([]);
   const [layout, setLayout] = useState<KeyboardLayout>('ko');
@@ -76,6 +90,21 @@ export function KeyboardSpeakScreen({ onSpeak, onBack, onHome, onSettings }: Key
     }
   };
 
+  const handleSelectSuggestion = (word: string) => {
+    const disassembled = Hangul.disassemble(word);
+    setJasos(disassembled);
+  };
+
+  const getSuggestions = () => {
+    const trimmed = textValue.trim();
+    if (!trimmed) {
+      return DEFAULT_SUGGESTIONS;
+    }
+    return AUTOCOMPLETE_WORDS.filter(
+      word => word.toLowerCase().includes(trimmed.toLowerCase()) && word !== trimmed
+    ).slice(0, 5);
+  };
+
   const activeRows = () => {
     if (layout === 'ko') {
       return isShiftActive ? KO_SHIFT_ROWS : KO_ROWS;
@@ -114,6 +143,20 @@ export function KeyboardSpeakScreen({ onSpeak, onBack, onHome, onSettings }: Key
             value={textValue}
             placeholder="하단의 가상 키보드를 조준하여 입력해 보세요..."
           />
+
+          {/* 자동완성 제안 바 */}
+          <div className="suggestions-bar" style={{ padding: '0 4px 4px 4px' }}>
+            {getSuggestions().map((suggestion, idx) => (
+              <button
+                key={idx}
+                className="suggestion-chip"
+                onClick={() => handleSelectSuggestion(suggestion)}
+              >
+                {suggestion}
+              </button>
+            ))}
+          </div>
+
           <div style={{ display: 'flex', gap: '10px', height: '48px', flexShrink: 0 }}>
             <button
               onClick={handleClear}

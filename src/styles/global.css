@@ -46,7 +46,7 @@ html, body { height: 100%; font-family: -apple-system, BlinkMacSystemFont, 'Sego
   gap: 8px;
   flex-shrink: 0;
 }
-.topbar-brand { display: flex; align-items: center; gap: 8px; flex: 1; }
+.topbar-brand { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
 .brand-mark {
   width: 32px; height: 32px; border-radius: 10px;
   background: var(--primary-light);
@@ -55,10 +55,54 @@ html, body { height: 100%; font-family: -apple-system, BlinkMacSystemFont, 'Sego
 .brand-name { font-size: 17px; font-weight: 700; color: var(--text); letter-spacing: -.3px; line-height: 1.2; }
 .brand-name em { font-style: italic; color: var(--primary); }
 .brand-sub { font-size: 10px; color: var(--text-secondary); font-weight: 500; letter-spacing: .5px; }
-.topbar-title { flex: 2; text-align: center; font-size: 17px; font-weight: 700; color: var(--text); }
-.topbar-back { display: flex; align-items: center; gap: 6px; flex: 1; background: none; border: none; cursor: pointer; padding: 4px 0; color: var(--primary); font-size: 20px; font-weight: 600; }
+.topbar-title { flex: 1; text-align: center; font-size: 17px; font-weight: 700; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 0 8px; }
+.topbar-back { display: flex; align-items: center; gap: 6px; flex-shrink: 0; background: none; border: none; cursor: pointer; padding: 4px 0; color: var(--primary); font-size: 20px; font-weight: 600; }
 .topbar-spacer { flex: 1; }
 .topbar-kbd { background: none; border: none; cursor: pointer; padding: 4px; color: var(--text-secondary); display: flex; align-items: center; }
+
+/* ── 말풍선 버튼 ── */
+.speech-bubble-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 10px rgba(31, 111, 178, 0.25);
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.speech-bubble-btn::after {
+  content: '';
+  position: absolute;
+  bottom: -6px;
+  right: 18px;
+  width: 0;
+  height: 0;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 6px solid var(--primary);
+  transition: border-top-color 0.2s ease;
+}
+.speech-bubble-btn:hover {
+  background: var(--primary-dark);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 14px rgba(31, 111, 178, 0.35);
+}
+.speech-bubble-btn:hover::after {
+  border-top-color: var(--primary-dark);
+}
+.speech-bubble-btn:active {
+  transform: scale(0.95);
+  box-shadow: 0 2px 6px rgba(31, 111, 178, 0.2);
+}
 
 /* ── 스크롤 바디 ── */
 .screen-body {
@@ -224,14 +268,84 @@ html, body { height: 100%; font-family: -apple-system, BlinkMacSystemFont, 'Sego
 .chip:active { opacity: .7; }
 
 /* ── 모달 ── */
-.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.4); display: flex; align-items: center; justify-content: center; padding: 24px; z-index: 100; }
-.modal { background: var(--surface); border-radius: 20px; padding: 24px; width: 100%; max-width: 400px; display: flex; flex-direction: column; gap: 16px; }
-.modal-title { font-size: 18px; font-weight: 700; color: var(--text); }
-.modal textarea { border: 1px solid var(--border); border-radius: 10px; padding: 14px; font-size: 16px; min-height: 80px; resize: none; font-family: inherit; color: var(--text); width: 100%; }
-.modal textarea:focus { outline: none; border-color: var(--primary); }
-.modal-actions { display: flex; justify-content: flex-end; gap: 8px; }
-.btn-cancel { background: none; border: none; padding: 10px 16px; font-size: 15px; color: var(--text-secondary); cursor: pointer; }
-.btn-speak { background: var(--primary); border: none; border-radius: 10px; padding: 10px 24px; font-size: 15px; font-weight: 600; color: #fff; cursor: pointer; }
+.modal-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,.4);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  z-index: 100;
+}
+.modal {
+  background: var(--surface);
+  border-top-left-radius: 24px;
+  border-top-right-radius: 24px;
+  padding: 16px;
+  width: 100%;
+  max-width: 430px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: 0 -8px 24px rgba(0,0,0,0.15);
+  animation: slide-up-drawer 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  max-height: 95%;
+  margin-bottom: 0;
+  box-sizing: border-box;
+}
+
+@keyframes slide-up-drawer {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+.modal-title { font-size: 16px; font-weight: 800; color: var(--text); }
+.btn-cancel { background: none; border: none; color: var(--text-secondary); cursor: pointer; }
+
+/* ── 자동완성 제안 바 ── */
+.suggestions-bar {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 2px 0 6px 0;
+  width: 100%;
+  scrollbar-width: none; /* Firefox */
+  flex-shrink: 0;
+}
+.suggestions-bar::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+.suggestion-chip {
+  background: var(--primary-light);
+  color: var(--primary);
+  border: 1.5px solid var(--border);
+  padding: 6px 12px;
+  border-radius: 9999px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.suggestion-chip:active {
+  transform: scale(0.95);
+  background: var(--primary);
+  color: #fff;
+  border-color: var(--primary);
+}
+
+/* ── 모달 내 인라인 키보드 ── */
+.virtual-keyboard-inline {
+  background: #E8EEF4;
+  border-radius: 16px;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.04);
+}
 
 /* ── 게임 / 링크 플레이스홀더 ── */
 .placeholder { flex: 1; display: flex; align-items: center; justify-content: center; font-size: 16px; color: var(--text-secondary); }

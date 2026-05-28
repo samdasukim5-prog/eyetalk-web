@@ -1,6 +1,7 @@
-import { useState } from 'react';
-import { IconEye, IconBack, IconKeyboard, IconSettings } from './Icons';
-import { House } from 'lucide-react';
+import { useState, useRef, useEffect } from 'react';
+import { IconEye, IconBack, IconSettings } from './Icons';
+import { House, MessageSquare } from 'lucide-react';
+import * as Hangul from 'hangul-js';
 
 interface TopBarProps {
   showBrand?: boolean;
@@ -11,16 +12,112 @@ interface TopBarProps {
   onHome?: () => void;
 }
 
+type KeyboardLayout = 'ko' | 'en' | 'num';
+
+const KO_ROWS = [
+  ['ㅂ', 'ㅈ', 'ㄷ', 'ㄱ', 'ㅅ', 'ㅛ', 'ㅕ', 'ㅑ', 'ㅐ', 'ㅔ'],
+  ['ㅁ', 'ㄴ', 'ㅇ', 'ㄹ', 'ㅎ', 'ㅗ', 'ㅓ', 'ㅏ', 'ㅣ'],
+  ['ㅋ', 'ㅌ', 'ㅊ', 'ㅍ', 'ㅠ', 'ㅜ', 'ㅡ']
+];
+
+const KO_SHIFT_ROWS = [
+  ['ㅃ', 'ㅉ', 'ㄸ', 'ㄲ', 'ㅆ', 'ㅛ', 'ㅕ', 'ㅑ', 'ㅒ', 'ㅖ'],
+  ['ㅁ', 'ㄴ', 'ㅇ', 'ㄹ', 'ㅎ', 'ㅗ', 'ㅓ', 'ㅏ', 'ㅣ'],
+  ['ㅋ', 'ㅌ', 'ㅊ', 'ㅍ', 'ㅠ', 'ㅜ', 'ㅡ']
+];
+
+const EN_ROWS = [
+  ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p'],
+  ['a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l'],
+  ['z', 'x', 'c', 'v', 'b', 'n', 'm']
+];
+
+const NUM_ROWS = [
+  ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'],
+  ['!', '@', '#', '$', '%', '^', '&', '*', '(', ')'],
+  ['~', '-', '+', '=', '?', '/', ',', '.', ':', ';']
+];
+
+const AUTOCOMPLETE_WORDS = [
+  "안녕하세요", "감사합니다", "죄송합니다", "네", "아니요", 
+  "아파요", "머리가 아파요", "목이 아파요", "어깨가 아파요", "배가 아파요", "팔이 아파요", "다리가 아파요",
+  "전혀 안 아파요", "조금 아파요", "많이 아파요", "매우 심해요",
+  "가래 빼주세요", "물 주세요", "담요 주세요", "화장실 가고 싶어요", "전화 해주세요", "가족 불러주세요", "약 주세요",
+  "TV 켜주세요", "TV 꺼주세요", "커튼 쳐주세요", "커튼 걷어주세요", "추워요", "더워요", "불편해요", "피곤해요",
+  "머리를 올려주세요", "머리를 내려주세요", "다리를 올려주세요", "다리를 내려주세요", "자세가 불편해요",
+  "좋아요", "힘들어요", "무서워요", "외로워요", "지루해요",
+  "배고파요", "목말라요", "도와주세요", "고마워요", "사랑해요", "자고 싶어요",
+  "불 꺼주세요", "불 켜주세요", "창문 열어주세요", "창문 닫아주세요"
+];
+
+const DEFAULT_SUGGESTIONS = ["안녕하세요", "감사합니다", "도와주세요", "물 주세요", "불편해요"];
+
 export function TopBar({ showBrand, title, onBack, onSettings, onSpeak, onHome }: TopBarProps) {
   const [showModal, setShowModal] = useState(false);
-  const [text, setText] = useState('');
+  const [jasos, setJasos] = useState<string[]>([]);
+  const [layout, setLayout] = useState<KeyboardLayout>('ko');
+  const [isShiftActive, setIsShiftActive] = useState<boolean>(false);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  const textValue = Hangul.assemble(jasos);
+
+  // Auto scroll textarea to bottom when textValue changes
+  useEffect(() => {
+    if (textareaRef.current) {
+      textareaRef.current.scrollTop = textareaRef.current.scrollHeight;
+    }
+  }, [textValue]);
+
+  const handleKeyPress = (key: string) => {
+    setJasos(prev => [...prev, key]);
+    if (isShiftActive) {
+      setIsShiftActive(false); // Reset shift after typing one letter
+    }
+  };
+
+  const handleSpace = () => {
+    setJasos(prev => [...prev, ' ']);
+  };
+
+  const handleBackspace = () => {
+    setJasos(prev => prev.slice(0, -1));
+  };
+
+  const handleClear = () => {
+    setJasos([]);
+  };
 
   const handleSpeak = () => {
-    if (text.trim()) {
-      onSpeak(text.trim());
+    if (textValue.trim()) {
+      onSpeak(textValue.trim());
       setShowModal(false);
-      setText('');
+      setJasos([]);
     }
+  };
+
+  const handleSelectSuggestion = (word: string) => {
+    const disassembled = Hangul.disassemble(word);
+    setJasos(disassembled);
+  };
+
+  const activeRows = () => {
+    if (layout === 'ko') {
+      return isShiftActive ? KO_SHIFT_ROWS : KO_ROWS;
+    } else if (layout === 'en') {
+      return EN_ROWS;
+    } else {
+      return NUM_ROWS;
+    }
+  };
+
+  const getSuggestions = () => {
+    const trimmed = textValue.trim();
+    if (!trimmed) {
+      return DEFAULT_SUGGESTIONS;
+    }
+    return AUTOCOMPLETE_WORDS.filter(
+      word => word.toLowerCase().includes(trimmed.toLowerCase()) && word !== trimmed
+    ).slice(0, 5);
   };
 
   return (
@@ -46,7 +143,7 @@ export function TopBar({ showBrand, title, onBack, onSettings, onSpeak, onHome }
         {title && <div className="topbar-title">{title}</div>}
         {!title && !showBrand && <div className="topbar-spacer" />}
 
-        <div style={{ display: 'flex', gap: 4, flex: 1, justifyContent: 'flex-end' }}>
+        <div style={{ display: 'flex', gap: 6, alignItems: 'center', justifyContent: 'flex-end', marginLeft: 'auto', flexShrink: 0 }}>
           {onSettings && (
             <button className="topbar-kbd" onClick={onSettings} aria-label="설정">
               <IconSettings size={22} />
@@ -57,26 +154,160 @@ export function TopBar({ showBrand, title, onBack, onSettings, onSpeak, onHome }
               <House size={22} />
             </button>
           )}
-          <button className="topbar-kbd" onClick={() => setShowModal(true)} aria-label="직접 입력">
-            <IconKeyboard size={22} />
+          <button className="speech-bubble-btn" onClick={() => setShowModal(true)} aria-label="자유롭게 표현하기">
+            <MessageSquare size={16} />
+            <span>자유롭게 표현하기</span>
           </button>
         </div>
       </div>
 
       {showModal && (
-        <div className="modal-overlay" onClick={() => setShowModal(false)}>
+        <div className="modal-overlay" onClick={() => { setShowModal(false); setJasos([]); }}>
           <div className="modal" onClick={e => e.stopPropagation()}>
-            <div className="modal-title">직접 입력</div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', marginBottom: '4px' }}>
+              <div className="modal-title">자유롭게 표현하기</div>
+              <button 
+                className="btn-cancel" 
+                onClick={() => { setShowModal(false); setJasos([]); }}
+                style={{ fontSize: '14px', fontWeight: 700, padding: '4px 8px' }}
+              >
+                닫기
+              </button>
+            </div>
+            
             <textarea
-              value={text}
-              onChange={e => setText(e.target.value)}
-              placeholder="하고 싶은 말을 입력하세요..."
-              autoFocus
-              onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSpeak(); }}}
+              ref={textareaRef}
+              readOnly
+              value={textValue}
+              placeholder="아래 키보드를 이용해 입력해 보세요..."
+              style={{
+                width: '100%',
+                borderRadius: '12px',
+                border: '1.5px solid var(--border)',
+                padding: '12px',
+                fontSize: '18px',
+                fontWeight: '600',
+                minHeight: '80px',
+                maxHeight: '100px',
+                resize: 'none',
+                outline: 'none',
+                background: '#fff',
+                color: 'var(--text)',
+                boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.01)',
+                fontFamily: 'inherit',
+              }}
             />
-            <div className="modal-actions">
-              <button className="btn-cancel" onClick={() => { setShowModal(false); setText(''); }}>취소</button>
-              <button className="btn-speak" onClick={handleSpeak}>말하기</button>
+
+            {/* 자동완성 제안 바 */}
+            <div className="suggestions-bar">
+              {getSuggestions().map((suggestion, idx) => (
+                <button
+                  key={idx}
+                  className="suggestion-chip"
+                  onClick={() => handleSelectSuggestion(suggestion)}
+                >
+                  {suggestion}
+                </button>
+              ))}
+            </div>
+
+            {/* 가상 키보드 영역 */}
+            <div className="virtual-keyboard-inline">
+              
+              {/* 키보드 레이아웃 탭 */}
+              <div className="keyboard-tabs">
+                <button
+                  className={`kbd-tab-btn ${layout === 'ko' ? 'active' : ''}`}
+                  onClick={() => { setLayout('ko'); setIsShiftActive(false); }}
+                >
+                  한글
+                </button>
+                <button
+                  className={`kbd-tab-btn ${layout === 'en' ? 'active' : ''}`}
+                  onClick={() => { setLayout('en'); }}
+                >
+                  English
+                </button>
+                <button
+                  className={`kbd-tab-btn ${layout === 'num' ? 'active' : ''}`}
+                  onClick={() => { setLayout('num'); }}
+                >
+                  숫자/기호
+                </button>
+              </div>
+
+              {/* 문자 키 행 */}
+              {activeRows().map((row, rowIdx) => (
+                <div key={rowIdx} className="keyboard-row">
+                  {/* 한글 레이아웃의 3번째 행 왼쪽에 Shift 키 추가 */}
+                  {layout === 'ko' && rowIdx === 2 && (
+                    <button
+                      className={`key-btn special-key ${isShiftActive ? 'active-shift' : ''}`}
+                      style={{ flex: 1.2, height: '42px', fontSize: '13px' }}
+                      onClick={() => setIsShiftActive(prev => !prev)}
+                    >
+                      Shift
+                    </button>
+                  )}
+
+                  {row.map(char => (
+                    <button
+                      key={char}
+                      className="key-btn"
+                      style={{ height: '42px', fontSize: '15px' }}
+                      onClick={() => handleKeyPress(char)}
+                    >
+                      {char}
+                    </button>
+                  ))}
+
+                  {/* 모든 레이아웃의 3번째 행 오른쪽에 Backspace 키 추가 */}
+                  {rowIdx === 2 && (
+                    <button
+                      className="key-btn special-key"
+                      style={{ flex: 1.5, height: '42px', fontSize: '13px' }}
+                      onClick={handleBackspace}
+                    >
+                      지우기
+                    </button>
+                  )}
+                </div>
+              ))}
+
+              {/* 마지막 스페이스바 및 기능 키 행 */}
+              <div className="keyboard-row" style={{ gap: '6px' }}>
+                <button
+                  className="key-btn special-key"
+                  style={{ flex: 1.5, height: '42px', fontSize: '13px', background: '#FCE8E6', color: '#D94040' }}
+                  onClick={handleClear}
+                >
+                  전체지움
+                </button>
+                
+                <button
+                  className="key-btn special-key space-key"
+                  style={{ flex: 4, height: '42px', fontSize: '14px' }}
+                  onClick={handleSpace}
+                >
+                  띄어쓰기
+                </button>
+
+                <button
+                  className="key-btn"
+                  style={{
+                    flex: 2.5,
+                    height: '42px',
+                    fontSize: '14px',
+                    background: 'var(--primary)',
+                    color: '#fff',
+                    border: 'none',
+                    fontWeight: '800'
+                  }}
+                  onClick={handleSpeak}
+                >
+                  말하기
+                </button>
+              </div>
             </div>
           </div>
         </div>

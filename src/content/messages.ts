@@ -217,5 +217,5 @@ export const quickButtons: MessageItem[] = [
   { id: 'quick_yes',    label: '네',           subtitle: '긍정',         icon: 'yes',   speech: '네',               tone: 'thanks' },
   { id: 'quick_no',     label: '아니오',       subtitle: '부정',         icon: 'no',    speech: '아니오',           tone: 'wait' },
   { id: 'quick_repeat', label: '다시 말해주세요', subtitle: '반복 요청', icon: 'voice', speech: '다시 말해주세요',  tone: 'cool' },
-  { id: 'quick_nurse',  label: '호출',         subtitle: '간호사 호출',  icon: 'bell',  speech: '간호사를 불러주세요', tone: 'call' },
+  { id: 'quick_nurse',  label: '비상벨',       subtitle: '긴급 호출',    icon: 'bell',  speech: '비상벨이 울립니다. 도와주세요.', tone: 'call' },
 ];
